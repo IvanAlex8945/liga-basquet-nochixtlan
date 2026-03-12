@@ -171,15 +171,15 @@ def roster_count(db: Session, team_id: int) -> int:
 @st.cache_data(ttl=300, show_spinner=False)
 def calculate_standings(_db: Session, season_id: int) -> pd.DataFrame:
     db = _db
-    """
-    Calcula tabla de posiciones.
-    Sistema de puntuación de la liga:
-      • Partido Ganado  (PG) = 3 puntos de liga
-      • Partido Perdido (PP) = 1 punto de liga
-      • Default / WO         = 1 punto de liga (equipo que recibe WO)
-      • WO Doble             = 0 puntos para ambos
-    Orden: Pts de liga DESC, Diferencia de Puntos DESC (1er desempate).
-    """
+    # """
+    # Calcula tabla de posiciones.
+    # Sistema de puntuación de la liga:
+    #  • Partido Ganado  (PG) = 3 puntos de liga
+    #  • Partido Perdido (PP) = 1 punto de liga
+    #  • Default / WO         = 1 punto de liga (equipo que recibe WO)
+    #  • WO Doble             = 0 puntos para ambos
+    # Orden: Pts de liga DESC, Diferencia de Puntos DESC (1er desempate).
+    # """
     teams = db.query(Team).filter(Team.season_id == season_id).all()
     if not teams:
         return pd.DataFrame()
@@ -271,11 +271,11 @@ def calculate_standings(_db: Session, season_id: int) -> pd.DataFrame:
 @st.cache_data(ttl=300, show_spinner=False)
 def get_top_scorers(_db: Session, season_id: int, limit: int = 10, phase: str | None = None) -> pd.DataFrame:
     db = _db
-    """
-    Top anotadores. Solo suma stats con el equipo ACTUAL del jugador.
-    phase: None = todas | "Fase Regular" | "Liguilla"
-    Columnas: Pos | Jugador (corto) | Equipo | PTS
-    """
+    # """
+    # Top anotadores. Solo suma stats con el equipo ACTUAL del jugador.
+    # phase: None = todas | "Fase Regular" | "Liguilla"
+    # Columnas: Pos | Jugador (corto) | Equipo | PTS
+    # """
     season = db.query(Season).filter(Season.id == season_id).first()
     if not season:
         return pd.DataFrame()
@@ -327,11 +327,11 @@ def get_top_scorers(_db: Session, season_id: int, limit: int = 10, phase: str | 
 @st.cache_data(ttl=300, show_spinner=False)
 def get_top_triples(_db: Session, season_id: int, limit: int = 10, phase: str | None = None) -> pd.DataFrame:
     db = _db
-    """
-    Top tripleros. Solo stats del equipo ACTUAL.
-    phase: None = todas | "Fase Regular" | "Liguilla"
-    Columnas: Pos | Jugador (corto) | Equipo | 3PT | Pts de 3
-    """
+    # """
+    # Top tripleros. Solo stats del equipo ACTUAL.
+    # phase: None = todas | "Fase Regular" | "Liguilla"
+    # Columnas: Pos | Jugador (corto) | Equipo | 3PT | Pts de 3
+    # """
     season = db.query(Season).filter(Season.id == season_id).first()
     if not season:
         return pd.DataFrame()
@@ -381,10 +381,10 @@ def get_top_triples(_db: Session, season_id: int, limit: int = 10, phase: str | 
 @st.cache_data(ttl=300, show_spinner=False)
 def get_record_points(_db: Session, season_id: int):
     db = _db
-    """
-    Récord de puntos en un solo partido de la temporada.
-    Devuelve string formateado o None.
-    """
+    # """
+    # Récord de puntos en un solo partido de la temporada.
+    # Devuelve string formateado o None.
+    # """
     result = (
         db.query(PlayerMatchStat, Player, Team, Match)
         .join(Player, Player.id == PlayerMatchStat.player_id)
@@ -407,10 +407,10 @@ def get_record_points(_db: Session, season_id: int):
 @st.cache_data(ttl=300, show_spinner=False)
 def get_record_triples(_db: Session, season_id: int):
     db = _db
-    """
-    Récord de triples en un solo partido de la temporada.
-    Devuelve string formateado o None.
-    """
+    # """
+    # Récord de triples en un solo partido de la temporada.
+    # Devuelve string formateado o None.
+    # """
     result = (
         db.query(PlayerMatchStat, Player, Team, Match)
         .join(Player, Player.id == PlayerMatchStat.player_id)
