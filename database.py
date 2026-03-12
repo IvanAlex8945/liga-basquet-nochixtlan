@@ -50,12 +50,12 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def init_db():
     """
     Crea todas las tablas si no existen.
-
-    Migraciones seguras para bases de datos existentes (idempotentes):
-    Nota: En Neon, Base.metadata.create_all ya creará la versión final de las tablas.
-    Los ALTER TABLE fallarán silenciosamente, lo cual es el comportamiento deseado.
     """
-    Base.metadata.create_all(bind=engine)
+    # 🚨 EL ESCUDO: Ignorar errores de tipos que ya existen en PostgreSQL
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception:
+        pass  # Si ya existe, no hacemos nada y dejamos que la app arranque
 
     with engine.connect() as conn:
         # ── v3: columna is_test ──────────────────────────────────────────
