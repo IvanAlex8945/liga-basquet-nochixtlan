@@ -168,7 +168,7 @@ def roster_count(db: Session, team_id: int) -> int:
 #  LÓGICA: TABLA DE POSICIONES
 # ════════════════════════════════════════════════════════════════════════════
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=300, show_spinner=False)
 def calculate_standings(_db: Session, season_id: int) -> pd.DataFrame:
     db = _db
     """
@@ -268,7 +268,7 @@ def calculate_standings(_db: Session, season_id: int) -> pd.DataFrame:
 #  LÓGICA: LÍDERES ESTADÍSTICOS
 # ════════════════════════════════════════════════════════════════════════════
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=300, show_spinner=False)
 def get_top_scorers(_db: Session, season_id: int, limit: int = 10, phase: str | None = None) -> pd.DataFrame:
     db = _db
     """
@@ -324,7 +324,7 @@ def get_top_scorers(_db: Session, season_id: int, limit: int = 10, phase: str | 
     return df[["Pos", "Jugador", "Equipo", "PTS"]]
 
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=300, show_spinner=False)
 def get_top_triples(_db: Session, season_id: int, limit: int = 10, phase: str | None = None) -> pd.DataFrame:
     db = _db
     """
@@ -378,7 +378,7 @@ def get_top_triples(_db: Session, season_id: int, limit: int = 10, phase: str | 
     return df[["Pos", "Jugador", "Equipo", "3PT", "Pts de 3"]]
 
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=300, show_spinner=False)
 def get_record_points(_db: Session, season_id: int):
     db = _db
     """
@@ -404,7 +404,7 @@ def get_record_points(_db: Session, season_id: int):
     )
 
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=300, show_spinner=False)
 def get_record_triples(_db: Session, season_id: int):
     db = _db
     """
