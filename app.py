@@ -168,7 +168,9 @@ def roster_count(db: Session, team_id: int) -> int:
 #  LÓGICA: TABLA DE POSICIONES
 # ════════════════════════════════════════════════════════════════════════════
 
-def calculate_standings(db: Session, season_id: int) -> pd.DataFrame:
+@st.cache_data(ttl=300)
+def calculate_standings(_db: Session, season_id: int) -> pd.DataFrame:
+    db = _db
     """
     Calcula tabla de posiciones.
     Sistema de puntuación de la liga:
@@ -266,8 +268,9 @@ def calculate_standings(db: Session, season_id: int) -> pd.DataFrame:
 #  LÓGICA: LÍDERES ESTADÍSTICOS
 # ════════════════════════════════════════════════════════════════════════════
 
-def get_top_scorers(db: Session, season_id: int, limit: int = 10,
-                    phase: str | None = None) -> pd.DataFrame:
+@st.cache_data(ttl=300)
+def get_top_scorers(_db: Session, season_id: int, limit: int = 10, phase: str | None = None) -> pd.DataFrame:
+    db = _db
     """
     Top anotadores. Solo suma stats con el equipo ACTUAL del jugador.
     phase: None = todas | "Fase Regular" | "Liguilla"
@@ -321,8 +324,9 @@ def get_top_scorers(db: Session, season_id: int, limit: int = 10,
     return df[["Pos", "Jugador", "Equipo", "PTS"]]
 
 
-def get_top_triples(db: Session, season_id: int, limit: int = 10,
-                    phase: str | None = None) -> pd.DataFrame:
+@st.cache_data(ttl=300)
+def get_top_triples(_db: Session, season_id: int, limit: int = 10, phase: str | None = None) -> pd.DataFrame:
+    db = _db
     """
     Top tripleros. Solo stats del equipo ACTUAL.
     phase: None = todas | "Fase Regular" | "Liguilla"
@@ -374,7 +378,9 @@ def get_top_triples(db: Session, season_id: int, limit: int = 10,
     return df[["Pos", "Jugador", "Equipo", "3PT", "Pts de 3"]]
 
 
-def get_record_points(db: Session, season_id: int):
+@st.cache_data(ttl=300)
+def get_record_points(_db: Session, season_id: int):
+    db = _db
     """
     Récord de puntos en un solo partido de la temporada.
     Devuelve string formateado o None.
@@ -398,7 +404,9 @@ def get_record_points(db: Session, season_id: int):
     )
 
 
-def get_record_triples(db: Session, season_id: int):
+@st.cache_data(ttl=300)
+def get_record_triples(_db: Session, season_id: int):
+    db = _db
     """
     Récord de triples en un solo partido de la temporada.
     Devuelve string formateado o None.
@@ -812,6 +820,7 @@ def page_management() -> None:
                             # 2. Borrar el equipo
                             db.delete(team)
                             db.commit()
+                            st.cache_data.clear()
                             st.success(
                                 f"✅ **{del_team_name}** eliminado permanentemente. "
                                 "No tenía partidos registrados."
@@ -820,6 +829,7 @@ def page_management() -> None:
                             # Con historial → solo marcar inactivo
                             team.status = "Dado de Baja"
                             db.commit()
+                            st.cache_data.clear()
                             st.warning(
                                 f"⚠️ **{del_team_name}** marcado como **Dado de Baja**. "
                                 f"Tenía {match_count} partido(s) en el historial — "
@@ -851,6 +861,7 @@ def page_management() -> None:
                             season_id=s.id, status="Activo",
                         ))
                         db.commit()
+                        st.cache_data.clear()
                         st.success(f"✅ '{nombre_eq}' registrado.")
                         st.rerun()
 
@@ -912,6 +923,7 @@ def page_management() -> None:
                         p.team_id = None
                         p.is_active = False
                         db.commit()
+                        st.cache_data.clear()
                     st.success(f"✅ {p.name} dado de baja.")
                     st.rerun()
 
@@ -946,6 +958,7 @@ def page_management() -> None:
                                 joined_team_date=date.today(),
                             ))
                             db.commit()
+                            st.cache_data.clear()
                         st.success(f"✅ {nombre} (#{p_num}) registrado.")
                         st.rerun()
 
@@ -1012,6 +1025,7 @@ def page_management() -> None:
                             player.team_id = tt.id
                             player.joined_team_date = date.today()
                             db.commit()
+                            st.cache_data.clear()
                         st.success(
                             f"✅ {p_label} → **{to_name}**. "
                             "Estadísticas reiniciadas."
@@ -1076,6 +1090,7 @@ def page_management() -> None:
                         else:
                             t.permissions_used = (t.permissions_used or 0) + 1
                             db.commit()
+                            st.cache_data.clear()
                             st.success("✅ Permiso registrado.")
                             st.rerun()
 
@@ -1097,6 +1112,7 @@ def page_management() -> None:
                             st.warning(
                                 f"⛔ {wo_n} dado de baja automáticamente.")
                         db.commit()
+                        st.cache_data.clear()
                     st.success("✅ WO registrado.")
                     st.rerun()
 
@@ -1364,6 +1380,7 @@ def page_capture() -> None:
                         m.away_score = away_score
                         m.played_date = datetime.now()
                         db.commit()
+                        st.cache_data.clear()
                     st.success("✅ Partido guardado.")
                     st.balloons()
                     st.rerun()
@@ -1385,6 +1402,7 @@ def page_capture() -> None:
                         if ht.defaults_count >= MAX_DEFAULTS_BAJA:
                             ht.status = "Dado de Baja"
                         db.commit()
+                        st.cache_data.clear()
                     st.success("WO registrado.")
                     st.rerun()
             with cwo2:
@@ -1400,6 +1418,7 @@ def page_capture() -> None:
                         if at.defaults_count >= MAX_DEFAULTS_BAJA:
                             at.status = "Dado de Baja"
                         db.commit()
+                        st.cache_data.clear()
                     st.success("WO registrado.")
                     st.rerun()
 
@@ -1535,6 +1554,7 @@ def page_capture() -> None:
                         m.away_score = e_as
                         m.played_date = datetime.now()
                         db.commit()
+                        st.cache_data.clear()
                     st.success("✅ Partido actualizado.")
                     st.rerun()
 
@@ -1739,6 +1759,7 @@ def page_calendar_admin() -> None:
                                         mo.venue = new_v
                                         mo.status = new_status
                                         db.commit()
+                                        st.cache_data.clear()
                                     st.session_state["cal_editing_mid"] = None
                                     st.success("✅ Partido actualizado.")
                                     st.rerun()
@@ -1779,6 +1800,7 @@ def page_calendar_admin() -> None:
                                             ).delete()
                                             db.delete(mo)
                                             db.commit()
+                                            st.cache_data.clear()
                                     st.session_state["cal_editing_mid"] = None
                                     st.success("🗑️ Partido eliminado.")
                                     st.rerun()
@@ -1878,6 +1900,7 @@ def page_calendar_admin() -> None:
                                 status="Programado",
                             ))
                             db.commit()
+                            st.cache_data.clear()
                             st.success(
                                 f"✅ **{home_name}** vs **{away_name}** — "
                                 f"J{jornada_manual} · "
@@ -2042,6 +2065,7 @@ def page_calendar_admin() -> None:
                             inserted += 1
 
                     db.commit()
+                    st.cache_data.clear()
 
                 msg = f"✅ {inserted} partido(s) generados."
                 if skipped:
@@ -2136,6 +2160,7 @@ def page_calendar_admin() -> None:
                                 ))
                                 inserted += 1
                     db.commit()
+                    st.cache_data.clear()
                 st.success(f"✅ {inserted} partido(s) de Cuartos generados.")
                 st.rerun()
 
@@ -2336,6 +2361,7 @@ def page_calendar_admin() -> None:
                                     ))
                                     inserted_sf += 1
                         db.commit()
+                        st.cache_data.clear()
                         st.success(
                             f"✅ {inserted_sf} partido(s) de Semifinal generados "
                             "con re-seeding aplicado."
@@ -2435,6 +2461,7 @@ def page_calendar_admin() -> None:
                                 status="Programado",
                             ))
                             db.commit()
+                            st.cache_data.clear()
                             f1 = db.query(Team).get(ht_f)
                             f2 = db.query(Team).get(at_f)
                             f1n = f1.name if f1 else "?"
@@ -3017,6 +3044,7 @@ def _delete_season(season_id: int) -> tuple[int, int, int]:
         # 5. Borrar la temporada
         db.delete(season)
         db.commit()
+        st.cache_data.clear()
 
     return n_matches, n_teams, n_players
 
@@ -3272,6 +3300,7 @@ def page_season_manager() -> None:
                     cloned_teams += 1
 
             db.commit()
+            st.cache_data.clear()
         # ← sesión cerrada aquí; usamos solo strings/ints a partir de este punto
 
         # ── Resumen post-creación ─────────────────────────────────────────
@@ -3336,6 +3365,7 @@ def page_season_manager() -> None:
                         current.is_active = False
                     target.is_active = True
                     db.commit()
+                    st.cache_data.clear()
                 st.success(
                     f"✅ **{target_name}** reactivada para {target_cat}."
                 )
