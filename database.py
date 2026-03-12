@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import sessionmaker
 from models import Base
 
-DATABASE_URL = "sqlite:///liga_nochixtlan.db"
+DATABASE_URL = st.secrets.get("DATABASE_URL", "sqlite:///liguilla_nochixtlan.db")
 
 engine = create_engine(
     DATABASE_URL,
